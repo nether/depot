@@ -17,7 +17,7 @@ class ProductTest < ActiveSupport::TestCase
 
   test "product price must be positive" do
     product = Product.new(title: "My book title",
-                          description: "yyy",
+                          description: "1234567890",
                           image_url: "zzz.jpg")
     product.price=-1
     assert product.invalid?
@@ -33,7 +33,7 @@ class ProductTest < ActiveSupport::TestCase
 
   def new_product(image_url)
      Product.new(title: "My book title",
-                 description: "yyy",
+                 description: "1234567890",
                  price: 1,
                  image_url: image_url)
   end
@@ -51,7 +51,7 @@ class ProductTest < ActiveSupport::TestCase
 
   test "product is not valid without a unique title" do
     product = Product.new( title: products(:ruby).title,
-                          description: "yyy",
+                          description: "1234567890",
                           price: 1,
                           image_url: "fred.gif")
     assert !product.save
@@ -59,4 +59,23 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal I18n.translate('activerecord.errors.messages.taken'),
       product.errors[:title].join('; ')
   end
-end
+
+  test "product title must be at least 10 characters long" do
+    product = Product.new(description: products(:ruby).description,
+                          price: products(:ruby).price,
+                          image_url: products(:ruby).image_url)
+    product.title = "123456789" #9 characters title, should be at least 10
+    assert product.invalid?
+    product.title = "1234567890" #10 characters title, should be valid
+    assert product.valid?
+  end
+
+  test "product description must be at least 10 characters long" do
+    product = Product.new(title: products(:ruby).title,
+                          price: products(:ruby).price,
+                          image_url: products(:ruby).image_url)
+    product.description = "123456789" #9 characters title, should be at least 10
+    assert product.invalid?
+    product.description = "1234567890" #10 characters title, should be valid
+    assert product.valid?
+  end
