@@ -71,11 +71,13 @@ class ProductTest < ActiveSupport::TestCase
   end
 
   test "product description must be at least 10 characters long" do
-    product = Product.new(title: products(:ruby).title,
+    product = Product.new(title: '1234567890',
                           price: products(:ruby).price,
                           image_url: products(:ruby).image_url)
     product.description = "123456789" #9 characters title, should be at least 10
-    assert product.invalid?
+    assert product.invalid?, "#{product.description} is a too short description and should be not valid"
     product.description = "1234567890" #10 characters title, should be valid
-    assert product.valid?
+    assert product.valid?, "#{product.description} should be a valid description. #{product.errors.inspect}"
+
   end
+end
